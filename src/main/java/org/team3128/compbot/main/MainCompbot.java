@@ -32,6 +32,7 @@ import org.team3128.common.utility.math.Rotation2D;
 import org.team3128.common.utility.test_suite.CanDevices;
 import org.team3128.common.utility.test_suite.ErrorCatcherUtility;
 import org.team3128.compbot.commands.*;
+import org.team3128.compbot.autonomous.*;
 import org.team3128.compbot.calibration.*;
 import org.team3128.compbot.subsystems.*;
 import org.team3128.compbot.subsystems.Constants;
@@ -65,6 +66,7 @@ public class MainCompbot extends NarwhalRobot {
 
     private DriveCommandRunning driveCmdRunning;
 
+    Command autoPriorityCommand;
 
     static FalconDrive drive = FalconDrive.getInstance();
 
@@ -112,9 +114,9 @@ public class MainCompbot extends NarwhalRobot {
         // // Instatiator if we're using the NavX
         // gyro = new NavX();
 
-        // // Instatiator if we're using the KoP Gyro
-        // gyro = new AnalogDevicesGyro();
-        // //gyro.recalibrate();
+        // Instatiator if we're using the KoP Gyro
+        gyro = new AnalogDevicesGyro();
+        //gyro.recalibrate();
 
         joystickRight = new Joystick(1);
         listenerRight = new ListenerManager(joystickRight);
@@ -152,6 +154,12 @@ public class MainCompbot extends NarwhalRobot {
         listenerRight.nameControl(ControllerExtreme3D.TWIST, "MoveTurn");
         listenerRight.nameControl(ControllerExtreme3D.JOYY, "MoveForwards");
         listenerRight.nameControl(ControllerExtreme3D.THROTTLE, "Throttle");
+        listenerRight.nameControl(new Button(12), "RunAutoPriority");
+
+        listenerRight.addButtonDownListener("RunAutoPriority", () -> {
+            autoPriorityCommand = new AutoPriorityTest(drive, 10000);
+			autoPriorityCommand.start();
+        });
 
         listenerRight.addMultiListener(() -> {
             if (driveCmdRunning.isRunning) {
@@ -250,10 +258,12 @@ public class MainCompbot extends NarwhalRobot {
 
     @Override
     protected void autonomousInit() {
+
     }
 
     @Override
     protected void disabledInit() {
+        autoPriorityCommand.cancel();
         scheduler.pause();
     }
 

@@ -8,6 +8,7 @@ import org.team3128.common.utility.units.Length;
 import org.team3128.common.drive.Drive;
 import org.team3128.compbot.subsystems.Constants;
 import org.team3128.common.utility.Log;
+import org.team3128.common.drive.DriveSignal;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.Timer;
@@ -53,8 +54,13 @@ public class CmdAutoTrajectory extends Command {
        }
     }
 
+    @Override protected void end() {
+        drive.setWheelPower(new DriveSignal(0, 0));
+    }
+
     @Override public void interrupted() { 
         Log.info("CmdAutoTrajectory", "Interrupted.");
+        end();
     }
 
 }
