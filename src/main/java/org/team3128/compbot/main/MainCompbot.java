@@ -109,14 +109,16 @@ public class MainCompbot extends NarwhalRobot {
         scheduler.schedule(drive, executor);
         scheduler.schedule(robotTracker, executor);
 
+        autoPriorityCommand = new AutoPriorityTest(drive, 10000);
+
         driveCmdRunning = new DriveCommandRunning();
 
         // // Instatiator if we're using the NavX
         // gyro = new NavX();
 
-        // Instatiator if we're using the KoP Gyro
-        gyro = new AnalogDevicesGyro();
-        //gyro.recalibrate();
+        // // Instatiator if we're using the KoP Gyro
+        // gyro = new AnalogDevicesGyro();
+        // gyro.recalibrate();
 
         joystickRight = new Joystick(1);
         listenerRight = new ListenerManager(joystickRight);
@@ -157,7 +159,6 @@ public class MainCompbot extends NarwhalRobot {
         listenerRight.nameControl(new Button(12), "RunAutoPriority");
 
         listenerRight.addButtonDownListener("RunAutoPriority", () -> {
-            autoPriorityCommand = new AutoPriorityTest(drive, 10000);
 			autoPriorityCommand.start();
         });
 
