@@ -95,6 +95,8 @@ public class MainCompbot extends NarwhalRobot {
     public NetworkTable table;
     public NetworkTable limelightTable;
 
+    public boolean manualShoot = false;
+
     public double startTime = 0;
 
     public String trackerCSV = "Time, X, Y, Theta, Xdes, Ydes";
@@ -238,7 +240,8 @@ public class MainCompbot extends NarwhalRobot {
         listenerRight.nameControl(ControllerExtreme3D.THROTTLE, "Throttle");
         listenerRight.nameControl(ControllerExtreme3D.TRIGGER, "AlignShoot");
         // listenerRight.nameControl(new Button(3), "ClearTracker");
-        listenerRight.nameControl(new Button(2), "zeroCallBount");
+        //listenerRight.nameControl(new Button(2), "zeroCallBount");
+        listenerRight.nameControl(new Button(2), "setDriverReady");
         listenerRight.nameControl(new Button(3), "loadingStation");
         listenerRight.nameControl(new Button(4), "RezeroArm");
         listenerRight.nameControl(new Button(5), "ZeroShooter");
@@ -260,8 +263,11 @@ public class MainCompbot extends NarwhalRobot {
 
         listenerLeft.nameControl(ControllerExtreme3D.TRIGGER, "Climb");
         //listenerLeft.nameControl(new POV(0), "BalancePOV");
+        listenerLeft.nameControl(new Button(2), "ManualAlignToggle");
         listenerLeft.nameControl(new Button(3), "EjectClimber");
         listenerLeft.nameControl(new Button(4), "EjectClimber");
+        listenerLeft.nameControl(new Button(5), "zeroCallBount");
+        listenerLeft.nameControl(new Button(6), "zeroCallBount");
         listenerLeft.nameControl(new Button(9), "IncrementBallCount");
         listenerLeft.nameControl(new Button(10), "DecrementBallCount");
         listenerLeft.nameControl(new Button(11), "EmergencyReset");
@@ -286,15 +292,24 @@ public class MainCompbot extends NarwhalRobot {
         }, "MoveTurn", "MoveForwards", "Throttle");
 
         listenerRight.addButtonDownListener("AlignShoot", () -> {
-            triggerCommand = new CmdAlignShoot(drive, shooter, arm, hopper, ahrs, shooterLimelight, driveCmdRunning,
+            if (!manualShoot) {
+                triggerCommand = new CmdAlignShoot(drive, shooter, arm, hopper, ahrs, shooterLimelight, driveCmdRunning,
                     Constants.VisionConstants.TX_OFFSET, 5);
+                Log.info("MainCompbot.java", "[Vision Alignment] Started");
+
+            } else {
+                triggerCommand = new CmdManualShoot(shooter, arm, hopper);
+                Log.info("MainCompbot.java", "[Manual Alignment] Started");
+            }
             triggerCommand.start();
-            Log.info("MainCompbot.java", "[Vision Alignment] Started");
         });
         listenerRight.addButtonUpListener("AlignShoot", () -> {
             triggerCommand.cancel();
             triggerCommand = null;
             Log.info("MainCompbot.java", "[Vision Alignment] Stopped");
+        });
+        listenerRight.addButtonDownListener("setDriverReady", () -> {
+            shooter.driverReady = true;
         });
         listenerRight.addButtonDownListener("loadingStation", () -> {
             Log.info("Button3", "pressed");
@@ -323,9 +338,6 @@ public class MainCompbot extends NarwhalRobot {
         listenerRight.addButtonUpListener("RunBalls", () -> {
             Log.info("Button8", "released");
             hopper.setAction(ActionState.STANDBY);
-        });
-        listenerRight.addButtonDownListener("zeroCallBount", () -> {
-            hopper.setBallCount(0);
         });
         // listenerRight.addButtonDownListener("runShooterFF", () -> {
         //     Log.info("Button5", "pressed");
@@ -397,6 +409,10 @@ public class MainCompbot extends NarwhalRobot {
             }
         });
 
+        listenerLeft.addButtonDownListener("ManualAlignToggle", () -> {
+            manualShoot = !manualShoot;
+        });
+
         listenerLeft.addButtonDownListener("Climb", () -> {
             Log.info("Trigger", "pressed");
             climber.setPower(Constants.ClimberConstants.CLIMB_POWER);
@@ -426,6 +442,9 @@ public class MainCompbot extends NarwhalRobot {
             shooter.setSetpoint(0);
             climber.setPower(0);
             climber.setIsClimbing(false);
+        });
+        listenerLeft.addButtonDownListener("zeroCallBount", () -> {
+            hopper.setBallCount(0);
         });
         /*listenerLeft.addListener("BalancePOV", (POVValue pov) -> {
             switch (pov.getDirectionValue()) {
