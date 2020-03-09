@@ -45,7 +45,7 @@ public class Shooter extends Threaded {
     private StateTracker stateTracker = StateTracker.getInstance();
     public ShooterState SHOOTER_STATE = ShooterState.MID_RANGE;
 
-    public boolean isReady = false;
+    public boolean driverReady = false;
 
     private Shooter() {
         configMotors();
