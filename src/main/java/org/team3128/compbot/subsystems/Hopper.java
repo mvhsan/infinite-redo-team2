@@ -44,14 +44,12 @@ public class Hopper extends Threaded {
 
     private static final Hopper instance = new Hopper();
 
-    // private boolean isMoving;
     private boolean empty0 = true;
     private boolean empty1 = true;
     private boolean isFeeding = false;
     private boolean isLoading = false;
     private boolean isReversing = false;
     private double startTime;
-    // private boolean isOrganizing = false;
     private boolean openTheGates = false;
     private double startPos = 0;
     public int ballCount;
@@ -77,6 +75,8 @@ public class Hopper extends Threaded {
                                                                      // mathhh
 
     public int hopper_update_count = 0;
+
+    public boolean debug = false;
 
     public static Hopper getInstance() {
         return instance;
@@ -207,11 +207,15 @@ public class Hopper extends Threaded {
         if(!SENSOR_0.get()) {
             detectCount++;
             notDetectCount = 0;
-            //Log.info("Hopper", "sensor detects ball");
+            if (debug) {
+                Log.info("Hopper", "sensor 0 detects ball");
+            }
         } else {
             notDetectCount++;
             detectCount = 0;
-            //Log.info("Hopper", "sensor doesn't detect ball");
+            if (debug) {
+                Log.info("Hopper", "sensor 0 doesn't detect ball");
+            }
         }
         if(detectCount >= 5) {
             detectCount = 0;
@@ -224,18 +228,21 @@ public class Hopper extends Threaded {
         }
 
         return detectBool;
-        //return(!sensor.get());
     }
 
     public boolean detectsBall1() {
         if(!SENSOR_1.get()) {
             detectCount1++;
             notDetectCount1 = 0;
-            //Log.info("Hopper", "sensor detects ball");
+            if (debug) {
+                Log.info("Hopper", "sensor 1 detects ball");
+            }
         } else {
             notDetectCount1++;
             detectCount1 = 0;
-            //Log.info("Hopper", "sensor doesn't detect ball");
+            if (debug) {
+                Log.info("Hopper", "sensor 1 doesn't detect ball");
+            }
         }
         if(detectCount1 >= 7) {
             detectCount1 = 0;
@@ -278,12 +285,16 @@ public class Hopper extends Threaded {
                 setMotorPowers(0, 0, 0);
             } else {
                 setMotorPowers(0, 0, 0);
-                // Log.info("Hopper", "Handling more than 3 balls");
+                if (debug) {
+                    Log.info("Hopper", "Handling more than 3 balls");
+                }
             }
         } else if (SENSOR_1_STATE) { // if there is a ball in the first sensor position
 
             setMotorPowers(0, Constants.HopperConstants.BASE_POWER, -Constants.HopperConstants.INDEXER_POWER);
-            //Log.info("Hopper", "detects ball");
+            if (debug) {
+                Log.info("Hopper", "sensor 1 detects ball");
+            }
 
         } else if (!SENSOR_1_STATE && !empty1) { // if there isn't a ball in the first position, but there was one in the last iteration
             Log.info("Hopper", "detected ball and was full previously, should iterate count if not reversing");
@@ -312,16 +323,22 @@ public class Hopper extends Threaded {
             if (ballCount > 0 && ballCount <= 4) {
                 if (Math.abs(CORNER_ENCODER.getPosition() - Constants.HopperConstants.BALL_SPACING[ballCount - 1]) >= Math.abs(startPos)) { // if the ball gets to the right position
                     isFeeding = false; // we're done
-                    // Log.info("Hopper", "reached end of offset");
+                    if (debug) {
+                        Log.info("Hopper", "reached end of offset");
+                    }
                 }
             } else {
                 Log.info("Hopper", "something was super wrong; your ballCount is " + ballCount);
                 if (Math.abs(CORNER_ENCODER.getPosition() - Constants.HopperConstants.BALL_SPACING[0]) >= Math.abs(startPos)) { // if the ball gets to the right position
                     isFeeding = false; // we're done
-                    // Log.info("Hopper", "reached end of offset");
+                    if (debug) {
+                        Log.info("Hopper", "reached end of offset");
+                    }
                 }
             }
-            //Log.info("Hopper", "is feeding");
+            if (debug) {
+                Log.info("Hopper", "is feeding");
+            }
         }
     }
 
@@ -357,10 +374,14 @@ public class Hopper extends Threaded {
                     }
                 }
                 if(SENSOR_1_STATE) {
-                    //////Log.info("Hopper", "setting empty1 to false 1");
+                    if (debug) {
+                        Log.info("Hopper", "sensor 1 detects ball 1");
+                    }
                     empty1 = false;
                 } else {
-                    //////Log.info("Hopper", "setting empty1 to true 1");
+                    if (debug) {
+                        Log.info("Hopper", "sensor 1 does not detect ball 1");
+                    }
                     empty1 = true;
                 }
                 try {
@@ -405,10 +426,14 @@ public class Hopper extends Threaded {
                     }
                 }
                 if(SENSOR_1_STATE) {
-                    //////Log.info("Hopper", "setting empty1 to false 2");
+                    if (debug) {
+                        Log.info("Hopper", "sensor 1 detects ball 2");
+                    }
                     empty1 = false;
                 } else {
-                    //////Log.info("Hopper", "setting empty1 to true 2");
+                    if (debug) {
+                        Log.info("Hopper", "sensor 1 does not detect ball 2");
+                    }
                     empty1 = true;
                 }
                 try {
@@ -454,10 +479,14 @@ public class Hopper extends Threaded {
                     }
                 }
                 if(SENSOR_1_STATE) {
-                    //////Log.info("Hopper", "setting empty1 to false 3");
+                    if (debug) {
+                        Log.info("Hopper", "sensor 1 detects ball 3");
+                    }
                     empty1 = false;
                 } else {
-                    //////Log.info("Hopper", "setting empty1 to true 3");
+                    if (debug) {
+                        Log.info("Hopper", "sensor 1 does not detect ball 3");
+                    }
                     empty1 = true;
                 }
                 try {
