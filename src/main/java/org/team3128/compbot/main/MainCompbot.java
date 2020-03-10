@@ -210,6 +210,17 @@ public class MainCompbot extends NarwhalRobot {
 
         //     }
         // });
+
+        NarwhalDashboard.addButton("VisionAlign", (boolean down) -> {
+            if (down) {
+                manualShoot = false;
+            }
+        });
+        NarwhalDashboard.addButton("ManualAlign", (boolean down) -> {
+            if (down) {
+                manualShoot = true;
+            }
+        });
         NarwhalDashboard.addButton("SetStateLong", (boolean down) -> {
                  if (down) {               
                     stateTracker.setState(RobotState.LONG_RANGE);
@@ -502,6 +513,7 @@ public class MainCompbot extends NarwhalRobot {
         NarwhalDashboard.put("voltage", RobotController.getBatteryVoltage());
         NarwhalDashboard.put("ball_count", hopper.getBallCount());
         NarwhalDashboard.put("shooting_state", StateTracker.robotState.shooterStateName);
+        NarwhalDashboard.put("align_toggle", String.valueOf(manualShoot));
 
         //Log.info("HOPPER", "" + hopper.SENSOR_1_STATE);
 
