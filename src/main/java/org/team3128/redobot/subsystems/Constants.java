@@ -1,6 +1,7 @@
 package org.team3128.redobot.subsystems;
 
 import org.team3128.common.utility.units.Length;
+import org.team3128.common.utility.datatypes.PIDConstants;
 import org.team3128.common.utility.units.Angle;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -70,5 +71,18 @@ public class Constants {
         public static final double MAX_LOOKAHEAD_DISTANCE = 30;
         public static final double MAX_TURN_ERROR = 2;
         public static final double MAX_PID_STOP_SPEED = 8;
+    }
+
+    public static class ForkliftConstants {
+        public static final int FORKLIFT_MOTOR_LEADER_ID = 0;
+        public static final int FORKLIFT_MOTOR_FOLLOWER_ID = 0;
+        public static final int FORKLIFT_LIMIT_SWITCH_ID = 0;
+        public static final double RATIO = 0.5 * Length.in; //lol
+        public static final double MAX_HEIGHT = 10 * Length.in; //lol again
+        public static final double SATURATION_LIMIT = 1;
+        public static final PIDConstants FORKLIFT_PID = new PIDConstants(0, 0, 0, 0);
+        public static final double FEEDFORWARD_POWER = 0.2;
+        public static final double THRESHOLD = 1 * Length.in;
+        public static final double ZEROING_POWER = -0.05;
     }
 }

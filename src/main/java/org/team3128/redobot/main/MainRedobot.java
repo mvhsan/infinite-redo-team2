@@ -10,7 +10,7 @@ import org.team3128.common.control.trajectory.Trajectory;
 import org.team3128.common.drive.DriveCommandRunning;
 import org.team3128.common.utility.units.Angle;
 import org.team3128.common.utility.units.Length;
-import org.team3128.redobot.subsystems.FalconDrive;
+import org.team3128.redobot.subsystems.*;
 import org.team3128.common.utility.Log;
 import org.team3128.common.listener.ListenerManager;
 import org.team3128.common.listener.controllers.ControllerExtreme3D;
@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.team3128.common.generics.ThreadScheduler;
 
-public class MainDrivetrain extends NarwhalRobot {
+public class MainRedobot extends NarwhalRobot {
 
     private DriveCommandRunning dcr;
     static FalconDrive drive = FalconDrive.getInstance();
@@ -40,6 +40,9 @@ public class MainDrivetrain extends NarwhalRobot {
     public ListenerManager listenerLeft, listenerRight;
     public AHRS ahrs;
     public static PowerDistributionPanel pdp;
+
+    public Claw claw = Claw.getInstance();
+    public Forklift forklift = Forklift.getInstance();
 
     @Override
     protected void constructHardware() {
@@ -63,6 +66,44 @@ public class MainDrivetrain extends NarwhalRobot {
     @Override
     protected void setupListeners() {
         // TODO Auto-generated method stub
+
+        listenerRight.nameControl(new Button(7), "Zero");
+        listenerRight.nameControl(new Button(8), "Low");
+        listenerRight.nameControl(new Button(9), "Mid");
+        listenerRight.nameControl(new Button(10), "High");
+
+        listenerRight.addListener("Zero", () -> {
+            forklift.setState(Forklift.ForkliftState.ZERO);
+        });
+        listenerRight.addListener("Low", () -> {
+            forklift.setState(Forklift.ForkliftState.LOW);
+        });
+        listenerRight.addListener("Mid", () -> {
+            forklift.setState(Forklift.ForkliftState.MID);
+        });
+        listenerRight.addListener("High", () -> {
+            forklift.setState(Forklift.ForkliftState.HIGH);
+        });
+
+        listenerRight.nameControl(new POV(0), "ClawPOV");
+
+        listenerRight.addListener("ClawPOV", (POVValue pov) -> {
+            switch (pov.getDirectionValue()) {
+                case 8:
+                case 7:
+                case 1:
+                    claw.Push();
+                    break;
+                    
+                case 3:
+                case 4:
+                case 5:
+                    claw.Retract();
+                    break;
+                default:
+                    break;
+            }
+        });        
 
         listenerRight.nameControl(ControllerExtreme3D.TWIST, "MoveTurn");
         listenerRight.nameControl(ControllerExtreme3D.JOYY, "MoveForwards");
@@ -128,7 +169,7 @@ public class MainDrivetrain extends NarwhalRobot {
     }
 
     public static void main(String... args) {
-        RobotBase.startRobot(MainDrivetrain::new);
+        RobotBase.startRobot(MainRedobot::new);
     }
 
     @Override
